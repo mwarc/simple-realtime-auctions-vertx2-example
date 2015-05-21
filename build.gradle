@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.darylteo.vertx:vertx-gradle-plugin:0.1.3'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'vertx'
+
+sourceCompatibility = 1.8
+group 'com.github.mwarc'
+version '0.1.0'
+
+configurations {
+    all*.exclude group: 'log4j', module: 'log4j'
+}
+
+dependencies {
+    compile 'ch.qos.logback:logback-classic:1.1.3'
+}
+
+vertx {
+    platform {
+        version '2.1.5'
+    }
+
+    config {
+        main 'java:com.github.mwarc.realtimeauctions.AuctionService'
+    }
+
+    deployments {
+        mod {
+            platform {
+                classpath 'ch.qos.logback:logback-classic:1.1.3'
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}

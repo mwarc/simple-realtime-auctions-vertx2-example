@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>The best online auction site!</title>
+
+    <script src="http://cdn.sockjs.org/sockjs-0.3.4.min.js"></script>
+    <script src="vertxbus-2.1.js"></script>
+    <script>
+        var auction_id = 1;
+
+        function init() {
+            loadCurrentPrice();
+            registerHandlerForUpdateCurrentPriceAndFeed();
+        };
+
+        function loadCurrentPrice() {
+            var xmlhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        document.getElementById('current_price').innerHTML = JSON.parse(xmlhttp.responseText).price + ' EUR';
+                    } else {
+                        document.getElementById('current_price').innerHTML = '0 EUR';
+                    }
+                }
+            };
+
+            xmlhttp.open("GET", "http://localhost:8080/auctions/" + auction_id);
+            xmlhttp.send();
+        };
+
+        function registerHandlerForUpdateCurrentPriceAndFeed() {
+            var eventBus = new vertx.EventBus('http://localhost:8080/ws');
+            eventBus.onopen = function () {
+                eventBus.registerHandler('auction.' + auction_id, function (message) {
+                    document.getElementById('feed').value += 'New offer: ' + JSON.parse(message).price + ' EUR \n';
+                    document.getElementById('current_price').innerHTML = JSON.parse(message).price + ' EUR';
+                });
+            }
+        };
+
+        function bid() {
+            var xmlhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            xmlhttp.open("PATCH", "http://localhost:8080/auctions/" + auction_id);
+            xmlhttp.setRequestHeader("Content-Type", "application/json");
+            xmlhttp.send(JSON.stringify({price: document.getElementById('my_bid_value').value}));
+        };
+    </script>
+</head>
+
+<body onload="init();">
+
+<h3>Auction 1</h3>
+<form>
+    Current price:
+    <span id="current_price"></span>
+    <div>
+        Your offer:
+        <input type="text" id="my_bid_value">
+        <input type="button" onclick="bid();" value="Bid">
+    </div>
+    <div>
+        Feed:
+        <textarea id="feed" rows="4" cols="50" readonly></textarea>
+    </div>
+</form>
+
+</body>
+
+</html>
