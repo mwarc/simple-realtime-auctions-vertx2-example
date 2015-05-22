@@ -62,7 +62,6 @@ public class EventBusHook implements EventBusBridgeHook {
 
     @Override
     public boolean handleAuthorise(JsonObject message, String sessionID, Handler<AsyncResult<Boolean>> handler) {
-        logger.info("Will not authorize {}", message);
         return false;
     }
 }
