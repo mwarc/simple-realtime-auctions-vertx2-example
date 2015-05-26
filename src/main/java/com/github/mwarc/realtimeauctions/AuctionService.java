@@ -1,7 +1,5 @@
 package com.github.mwarc.realtimeauctions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.java.core.json.JsonArray;
@@ -14,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 public class AuctionService extends Verticle {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
 
     @Override
     public void start() {
@@ -52,19 +48,23 @@ public class AuctionService extends Verticle {
                     request.bodyHandler(body -> {
                         String auctionId = request.params().get("id");
                         Map<String, String> auctionRequestBody = AuctionConverter.toMap(body);
-
                         ConcurrentMap<String, String> auctionSharedData = vertx.sharedData().getMap(auctionId);
 
                         if (AuctionValidator.isBidPossible(auctionSharedData, auctionRequestBody)) {
                             auctionSharedData.put("id", auctionId);
                             auctionSharedData.put("price", auctionRequestBody.get("price"));
                             vertx.eventBus().publish("auction." + auctionId, AuctionConverter.toJson(auctionRequestBody));
-                        }
 
-                        request.response()
-                            .putHeader("content-type", "application/json")
-                            .setStatusCode(200)
-                            .end();
+                            request.response()
+                                .putHeader("content-type", "application/json")
+                                .setStatusCode(200)
+                                .end();
+                        } else {
+                            request.response()
+                                .putHeader("content-type", "application/json")
+                                .setStatusCode(400)
+                                .end();
+                        }
                     });
                 });
         httpServer.requestHandler(httpRouteMatcher);
@@ -87,7 +87,6 @@ public class AuctionService extends Verticle {
     }
 
     private void runHttpServer(HttpServer httpServer) {
-        logger.info("Starting SockJS server on port {}", 8080);
         httpServer.listen(8080);
     }
 }
