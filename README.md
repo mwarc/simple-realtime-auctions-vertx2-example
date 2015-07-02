@@ -1,4 +1,6 @@
-# realtime-auctions-vertx-example
+# realtime-auctions-vertx2-example
+
+Realtime auctions example using Vert.x 2.
 
 ## How to run
 
