@@ -1,5 +1,7 @@
 # realtime-auctions-vertx2-example
 
+[![Build Status](https://travis-ci.org/mwarc/simple-realtime-auctions-vertx2-example.svg?branch=master)](https://travis-ci.org/mwarc/simple-realtime-auctions-vertx2-example)
+
 Realtime auctions example using Vert.x 2.
 
 ## How to run
