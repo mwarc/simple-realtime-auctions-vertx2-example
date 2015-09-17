@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mwarc/simple-realtime-auctions-vertx2-example.svg?branch=master)](https://travis-ci.org/mwarc/simple-realtime-auctions-vertx2-example)
 
-Simple realtime auctions example using Vert.x 2.
+Simple realtime auctions example using Websockets and Vert.x 2.
 
 ## How to run
 
